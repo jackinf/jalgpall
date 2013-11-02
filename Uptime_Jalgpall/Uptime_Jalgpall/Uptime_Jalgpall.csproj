@@ -187,7 +187,10 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\ball.jpg" />
+    <Content Include="Images\football_wallpaper.jpg" />
     <Content Include="Images\jevgeni_photo.jpg" />
+    <Content Include="Images\me.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Properties\PublishProfiles\jalgpall - FTP.pubxml" />

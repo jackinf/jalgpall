@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Uptime_Jalgpall.Models
+﻿namespace Uptime_Jalgpall.Models
 {
     public class Pair
     {

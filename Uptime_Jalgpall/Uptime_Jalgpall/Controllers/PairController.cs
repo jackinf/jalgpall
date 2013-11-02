@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Uptime_Jalgpall.Models;
 
@@ -20,16 +17,18 @@ namespace Uptime_Jalgpall.Controllers
             var results = from c in db.Pairs
                         join d in db.Teams on c.Team1.ID equals d.ID
                         join e in db.Teams on c.Team2.ID equals e.ID
+                        join tourn in db.Tournaments on c.Tournament.ID equals tourn.ID
                         select new
                         {
-                            ID = c.ID,
+                            c.ID,
                             Team1 = d,
-                            Team2 = e,
-                            Team1Scored = c.Team1Scored,
-                            Team2Scored = c.Team2Scored
+                            Team2 = e, 
+                            c.Team1Scored, 
+                            c.Team2Scored,
+                            Tournament = tourn
                         };
 
-            List<Pair> pairs = new List<Pair>();
+            var pairs = new List<Pair>();
             foreach (var result in results)
             {
                 Pair pair = new Pair();
@@ -38,6 +37,7 @@ namespace Uptime_Jalgpall.Controllers
                 pair.Team2 = result.Team2;
                 pair.Team1Scored = result.Team1Scored;
                 pair.Team2Scored = result.Team2Scored;
+                pair.Tournament = result.Tournament;
                 pairs.Add(pair);
             }
 
@@ -51,6 +51,19 @@ namespace Uptime_Jalgpall.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            (from c in db.Pairs
+             join d in db.Teams on c.Team1.ID equals d.ID
+             join e in db.Teams on c.Team2.ID equals e.ID
+             join tourn in db.Tournaments on c.Tournament.ID equals tourn.ID
+             select new
+             {
+                 c.ID,
+                 Team1 = d,
+                 Team2 = e,
+                 c.Team1Scored,
+                 c.Team2Scored,
+                 Tournament = tourn
+             }).ToList();
             Pair pair = db.Pairs.Find(id);
             if (pair == null)
             {
@@ -62,24 +75,9 @@ namespace Uptime_Jalgpall.Controllers
         // GET: /Pair/Create
         public ActionResult Create()
         {
-            var teams = db
-                .Teams
-                .ToList()
-                .Select(c => new SelectListItem
-                {
-                    Value = c.ID.ToString(),
-                    Text = c.Name
-                });
-            var tournaments = db
-                .Tournaments
-                .ToList()
-                .Select(c => new SelectListItem
-                {
-                    Value = c.ID.ToString(),
-                    Text = c.Name
-                });
-            ViewBag.teams = new SelectList(teams, "Value", "Text");
-            ViewBag.tournaments = new SelectList(tournaments, "Value", "Text");
+            ViewBag.Team1 = GetSelectListOfTeams();
+            ViewBag.Team2 = GetSelectListOfTeams();
+            ViewBag.tournaments = GetSelectListOfTournaments();
 
             return View();
         }
@@ -89,15 +87,49 @@ namespace Uptime_Jalgpall.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="ID,Team1,Team2,Winner,Tournament")] Pair pair)
+        public ActionResult Create(FormCollection fc, [Bind(Include="ID,Team1,Team2,Team1Scored,Team2Scored")] Pair pair)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Pairs.Add(pair);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                int team1ID = int.Parse(fc["Team1"]);
+                int team2ID = int.Parse(fc["Team2"]);
+                int tournamentID = int.Parse(fc["tournaments"]);
+                if (team1ID == team2ID)
+                {
+                    ViewBag.Error = "Cannot play against yourself";
+                    ViewBag.Team1 = GetSelectListOfTeams();
+                    ViewBag.Team2 = GetSelectListOfTeams();
+                    ViewBag.tournaments = GetSelectListOfTournaments();
+                    return View(pair);
+                }
+
+                Team team1 = db.Teams.Find(team1ID);
+                Team team2 = db.Teams.Find(team2ID);
+                Tournament tournament = db.Tournaments.Find(tournamentID);
+
+                if (!DoesPairExists(team1ID, team2ID, tournamentID))
+                {
+                    pair.Team1 = team1;
+                    pair.Team2 = team2;
+                    pair.Tournament = tournament;
+                    db.Pairs.Add(pair);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.Error = "Pair already exists";
+                }
+
+            }
+            catch
+            {
+                ViewBag.Error = "Internal error has occured";
             }
 
+            ViewBag.Team1 = GetSelectListOfTeams();
+            ViewBag.Team2 = GetSelectListOfTeams();
+            ViewBag.tournaments = GetSelectListOfTournaments();
             return View(pair);
         }
 
@@ -139,6 +171,19 @@ namespace Uptime_Jalgpall.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            (from c in db.Pairs
+                           join d in db.Teams on c.Team1.ID equals d.ID
+                           join e in db.Teams on c.Team2.ID equals e.ID
+                           join tourn in db.Tournaments on c.Tournament.ID equals tourn.ID
+                           select new
+                           {
+                               c.ID,
+                               Team1 = d,
+                               Team2 = e,
+                               c.Team1Scored,
+                               c.Team2Scored,
+                               Tournament = tourn
+                           }).ToList();
             Pair pair = db.Pairs.Find(id);
             if (pair == null)
             {
@@ -184,15 +229,12 @@ namespace Uptime_Jalgpall.Controllers
         [HttpPost]
         public ActionResult Step2(FormCollection fc, int id)
         {
-            int team1_id;
-            int team2_id;
-
             for (int i = 1; i <= fc.AllKeys.Count(); i+=2)
             {
                 try
                 {
-                    team1_id = int.Parse(fc.Get(i));
-                    team2_id = int.Parse(fc.Get(i+1));
+                    int team1_id = int.Parse(fc.Get(i));
+                    int team2_id = int.Parse(fc.Get(i+1));
                     AddNewPair(team1_id, team2_id, id);
                 }
                 catch
@@ -230,8 +272,8 @@ namespace Uptime_Jalgpall.Controllers
 
         private bool DoesPairExists(int team1_id, int team2_id, int tournament_id)
         {
-            var result = db.Pairs.Select(c => c).Where(c => c.Team1.ID == team1_id && c.Team2.ID == team2_id && c.Tournament.ID == tournament_id).DefaultIfEmpty();
-            return result == null ? false : true;
+            var result = db.Pairs.Select(c => c).Where(c => c.Team1.ID == team1_id && c.Team2.ID == team2_id && c.Tournament.ID == tournament_id).ToList();
+            return result.Count > 0;
         }
 
         public PartialViewResult AjaxAddPair(int pairs)
@@ -284,6 +326,16 @@ namespace Uptime_Jalgpall.Controllers
                     Text = c.Name
                 });
             return new SelectList(teams, "Value", "Text");
+        }
+
+        private SelectList GetSelectListOfTournaments()
+        {
+            var tournaments = db.Tournaments.ToList().Select(c => new SelectListItem
+            {
+                Value = c.ID.ToString(),
+                Text = c.Name
+            });
+            return new SelectList(tournaments, "Value", "Text");
         }
 
         protected override void Dispose(bool disposing)

@@ -10,6 +10,39 @@
     <h4>Pair</h4>
 	<hr />
     <dl class="dl-horizontal">
+        <dt>
+            Team 1
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team1.Name)
+        </dd>
+        
+        <dt>
+            Team 2
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team2.Name)
+        </dd>
+        
+        <dt>
+            Score
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team1Scored) : @Html.DisplayFor(model => model.Team2Scored)
+        </dd>
+        
+        <dt>
+            Tournament
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Tournament.Name)
+        </dd>
+
+
     </dl>
 </div>
 <p>

@@ -1,6 +1,5 @@
 namespace Uptime_Jalgpall.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     
     public partial class Initial : DbMigration

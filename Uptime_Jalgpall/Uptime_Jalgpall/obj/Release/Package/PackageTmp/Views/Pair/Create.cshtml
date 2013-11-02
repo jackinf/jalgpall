@@ -6,40 +6,46 @@
 
 <h2>Create</h2>
 
-<p>
-    testing: @ViewBag.teams
-</p>
-
 
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
-    
+
+    <div class="danger">
+        @ViewBag.Error
+    </div>
+
     <div class="form-horizontal">
         <h4>Pair</h4>
         <hr />
         @Html.ValidationSummary(true)
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10" name="Team1">
-                Team 1: @Html.DropDownList("teams")
+            <div class="col-md-offset-2 col-md-10">
+                Team 1: @Html.DropDownList("Team1")
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10" name="Team2">
-                Team 2: @Html.DropDownList("teams")
+            <div class="col-md-offset-2 col-md-10">
+                Team 2: @Html.DropDownList("Team2")
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10" name="Winner">
-                Winner:  @Html.DropDownList("teams")
+            <div class="col-md-offset-2 col-md-10">
+                Team 1 Scored:  @Html.EditorFor(model => model.Team1Scored)
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                Team 2 Scored:  @Html.EditorFor(model => model.Team2Scored)
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10" name="Tournament">
+            <div class="col-md-offset-2 col-md-10">
                 Tournament: @Html.DropDownList("tournaments")
             </div>
         </div>
