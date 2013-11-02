@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Uptime_Jalgpall.Models.Pair>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Team 1
+        </th>
+        <th>
+            Team 2
+        </th>
+        <th>
+            Score
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team1.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team2.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team1Scored) : @Html.DisplayFor(modelItem => item.Team2Scored)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+        </td>
+    </tr>
+}
+
+</table>

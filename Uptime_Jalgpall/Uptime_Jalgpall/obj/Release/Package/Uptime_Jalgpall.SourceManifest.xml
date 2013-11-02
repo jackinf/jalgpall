@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sitemanifest>
+  <IisApp path="\\psf\home\documents\visual studio 2013\Projects\Uptime_Jalgpall\Uptime_Jalgpall\obj\Release\Package\PackageTmp" managedRuntimeVersion="v4.0" />
+  <setAcl path="\\psf\home\documents\visual studio 2013\Projects\Uptime_Jalgpall\Uptime_Jalgpall\obj\Release\Package\PackageTmp" setAclResourceType="Directory" />
+  <setAcl path="\\psf\home\documents\visual studio 2013\Projects\Uptime_Jalgpall\Uptime_Jalgpall\obj\Release\Package\PackageTmp" setAclUser="anonymousAuthenticationUser" setAclResourceType="Directory" />
+</sitemanifest>

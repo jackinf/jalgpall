@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Uptime_Jalgpall.Models.Tournament>
+
+@{
+    ViewBag.Title = "Step1";
+}
+
+<h2>Step 1: Choose a tournament</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Choose", "Step2", "Pair", new { id = item.ID }, new { id = item.ID })
+            </td>
+        </tr>
+    }
+
+</table>
+

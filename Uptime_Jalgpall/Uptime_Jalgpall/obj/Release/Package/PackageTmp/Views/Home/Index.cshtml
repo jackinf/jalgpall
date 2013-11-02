@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Football Tournament Application</h1>
+    <p class="lead">Tournament application lets you see football tournaments, football teams and create pairings. You can create pairings right now!
+        
+    </p>
+    <p>
+        @Html.ActionLink("Create pairings >", "Step1", "Pair", new { }, new { @class = "btn btn-primary btn-lg" })
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Football tournaments</h2>
+        <p>
+            This application lets users view all the football tournaments.
+        </p>
+        <p>
+            @Html.ActionLink("View Tournaments >", "Index", "Tournament", new { }, new { @class = "btn btn-default" })
+        </p>
+    </div>
+    <div class="col-md-6">
+        <h2>Football teams</h2>
+        <p>
+            Everyone can view all the teams that are in this application database
+        </p>
+        <p>
+            @Html.ActionLink("View Teams >", "Index", "Team", new { }, new { @class = "btn btn-default" })
+        </p>
+    </div>
+</div>
